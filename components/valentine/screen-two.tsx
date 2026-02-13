@@ -126,37 +126,69 @@ export default function ScreenTwo({ onYes, onNo }: ScreenTwoProps) {
         <div className="h-0.5 w-20 bg-gradient-to-l from-transparent to-yellow-400/60 rounded-full" />
       </motion.div>
 
-      {/* CardSwap - sin backdrop-blur */}
+      {/* CardSwap con animación ligera */}
       <motion.div
         variants={itemVariants}
-        className="w-full max-w-lg flex-shrink-0 my-6"
+        className="w-full max-w-lg flex-shrink-0 my-6 relative"
         style={{ height: '340px', minHeight: '340px' }}
       >
-        <CardSwap
-          cardDistance={40}
-          verticalDistance={50}
-          delay={5500}
-          pauseOnHover={true}
-          easing="linear"
-          width="100%"
-          height="300px"
+        {/* Sparkles decorativas alrededor de las fotos */}
+        <motion.span
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+          className="absolute -top-4 -right-2 text-xl z-20 pointer-events-none"
         >
-          <Card customClass="rounded-3xl bg-neutral-900/80 border border-yellow-400/20 shadow-lg overflow-hidden">
-            <div className="w-full h-full">
-              <img src="/images/two2.jpg" alt="Foto 4" className="w-full h-full object-contain" loading="lazy" decoding="async" />
-            </div>
-          </Card>
-          <Card customClass="rounded-3xl bg-neutral-900/80 border border-yellow-400/20 shadow-lg overflow-hidden">
-            <div className="w-full h-full">
-              <img src="/images/two1.jpg" alt="Foto 5" className="w-full h-full object-contain" loading="lazy" decoding="async" />
-            </div>
-          </Card>
-          <Card customClass="rounded-3xl bg-neutral-900/80 border border-yellow-400/20 shadow-lg overflow-hidden">
-            <div className="w-full h-full">
-              <img src="/images/two3.jpg" alt="Foto 6" className="w-full h-full object-contain" loading="lazy" decoding="async" />
-            </div>
-          </Card>
-        </CardSwap>
+          ✨
+        </motion.span>
+        <motion.span
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+          className="absolute -top-4 -left-2 text-xl z-20 pointer-events-none"
+        >
+          💛
+        </motion.span>
+        <motion.span
+          animate={{ opacity: [0.3, 0.9, 0.3] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
+          className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-lg z-20 pointer-events-none"
+        >
+          ⭐
+        </motion.span>
+
+        {/* Glow sutil detrás de las cards (radial gradient, sin blur filter) */}
+        <div className="absolute inset-0 -m-4 rounded-3xl bg-[radial-gradient(ellipse_at_center,rgba(250,204,21,0.12)_0%,transparent_70%)] pointer-events-none" />
+
+        <motion.div
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-full h-full"
+        >
+          <CardSwap
+            cardDistance={40}
+            verticalDistance={50}
+            delay={5500}
+            pauseOnHover={true}
+            easing="linear"
+            width="100%"
+            height="300px"
+          >
+            <Card customClass="rounded-3xl bg-neutral-900/80 border border-yellow-400/30 shadow-lg shadow-yellow-500/10 overflow-hidden">
+              <div className="w-full h-full">
+                <img src="/images/two2.jpg" alt="Foto 4" className="w-full h-full object-contain" loading="lazy" decoding="async" />
+              </div>
+            </Card>
+            <Card customClass="rounded-3xl bg-neutral-900/80 border border-yellow-400/30 shadow-lg shadow-yellow-500/10 overflow-hidden">
+              <div className="w-full h-full">
+                <img src="/images/two1.jpg" alt="Foto 5" className="w-full h-full object-contain" loading="lazy" decoding="async" />
+              </div>
+            </Card>
+            <Card customClass="rounded-3xl bg-neutral-900/80 border border-yellow-400/30 shadow-lg shadow-yellow-500/10 overflow-hidden">
+              <div className="w-full h-full">
+                <img src="/images/two3.jpg" alt="Foto 6" className="w-full h-full object-contain" loading="lazy" decoding="async" />
+              </div>
+            </Card>
+          </CardSwap>
+        </motion.div>
       </motion.div>
 
       {/* Separador */}

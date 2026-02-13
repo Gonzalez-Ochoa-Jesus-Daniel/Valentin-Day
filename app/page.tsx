@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 export default function Page() {
-  const videoUrl = "/videos/ella.mp4";
+  const videoUrl = "/videos/us.mp4";
   const audioUrl = "/music/tyler.mp3";
 
   return (
