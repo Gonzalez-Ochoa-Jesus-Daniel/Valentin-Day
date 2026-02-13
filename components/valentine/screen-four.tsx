@@ -7,24 +7,39 @@ interface ScreenFourProps {
   audioUrl?: string;
 }
 
-/* ── Partículas doradas flotantes (CSS puro, 0 costo JS) ── */
-const PARTICLES = [
-  { left: '10%', delay: '0s', dur: '7s', size: 3 },
-  { left: '25%', delay: '1.5s', dur: '9s', size: 2 },
-  { left: '45%', delay: '0.8s', dur: '8s', size: 4 },
-  { left: '65%', delay: '2.2s', dur: '10s', size: 2 },
-  { left: '80%', delay: '0.3s', dur: '7.5s', size: 3 },
-  { left: '92%', delay: '1.8s', dur: '9.5s', size: 2 },
+/* ═══ Shooting stars — different angles, speeds ═══ */
+const STARS = [
+  { top: '5%',  left: '-5%',  angle: 35,  dur: '2.8s', delay: '0s',   len: 120 },
+  { top: '15%', left: '-5%',  angle: 25,  dur: '3.4s', delay: '4s',   len: 90 },
+  { top: '8%',  left: '30%',  angle: 40,  dur: '2.2s', delay: '7s',   len: 100 },
+  { top: '20%', left: '50%',  angle: 30,  dur: '3s',   delay: '11s',  len: 80 },
+  { top: '3%',  left: '70%',  angle: 38,  dur: '2.6s', delay: '15s',  len: 110 },
 ];
 
-/* ── Estrellas que parpadean en las esquinas (CSS puro) ── */
-const TWINKLES = [
-  { top: '8%', left: '6%', delay: '0s', size: '1.2rem' },
-  { top: '12%', right: '8%', delay: '1.4s', size: '1rem' },
-  { bottom: '15%', left: '10%', delay: '0.7s', size: '0.9rem' },
-  { bottom: '10%', right: '12%', delay: '2.1s', size: '1.1rem' },
-  { top: '35%', right: '5%', delay: '0.4s', size: '0.8rem' },
-  { top: '55%', left: '4%', delay: '1.8s', size: '0.85rem' },
+/* ═══ Firefly particles — organic movement ═══ */
+const FIREFLIES = [
+  { x: '12%', y: '20%', dur: '6s',  delay: '0s',   size: 3 },
+  { x: '85%', y: '30%', dur: '7s',  delay: '1s',   size: 2 },
+  { x: '25%', y: '70%', dur: '8s',  delay: '0.5s', size: 3 },
+  { x: '70%', y: '80%', dur: '6.5s',delay: '2s',   size: 2 },
+  { x: '50%', y: '15%', dur: '7.5s',delay: '1.5s', size: 4 },
+  { x: '90%', y: '60%', dur: '6s',  delay: '3s',   size: 2 },
+  { x: '8%',  y: '50%', dur: '8s',  delay: '0.8s', size: 3 },
+  { x: '40%', y: '90%', dur: '7s',  delay: '2.5s', size: 2 },
+];
+
+/* ═══ Rising golden orbs ═══ */
+const ORBS = [
+  { left: '8%',  dur: '11s', delay: '0s',   size: 5 },
+  { left: '22%', dur: '14s', delay: '2s',   size: 3 },
+  { left: '38%', dur: '12s', delay: '1s',   size: 4 },
+  { left: '55%', dur: '13s', delay: '3s',   size: 3 },
+  { left: '72%', dur: '11s', delay: '0.5s', size: 5 },
+  { left: '88%', dur: '15s', delay: '2.5s', size: 4 },
+  { left: '45%', dur: '10s', delay: '4s',   size: 3 },
+  { left: '15%', dur: '13s', delay: '5s',   size: 2 },
+  { left: '65%', dur: '12s', delay: '1.5s', size: 3 },
+  { left: '95%', dur: '14s', delay: '3.5s', size: 2 },
 ];
 
 export default function ScreenFour({ audioUrl }: ScreenFourProps) {
@@ -49,114 +64,228 @@ export default function ScreenFour({ audioUrl }: ScreenFourProps) {
     initial: { opacity: 0 },
     animate: {
       opacity: 1,
-      transition: { staggerChildren: 0.18, delayChildren: 0.3 },
+      transition: { staggerChildren: 0.2, delayChildren: 0.4 },
     },
   };
 
   const itemVariants = {
-    initial: { opacity: 0, y: 25 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.7, ease: 'easeOut' } },
+    initial: { opacity: 0, y: 30 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
   };
 
   return (
     <div className="w-full h-full overflow-hidden relative">
       {audioUrl && <audio ref={audioRef} src={audioUrl} />}
 
-      {/* ── CSS keyframes (solo opacity + transform = GPU friendly) ── */}
+      {/* ═══════════ ALL CSS KEYFRAMES — only transform + opacity = GPU composited ═══════════ */}
       <style jsx>{`
-        @keyframes float-up {
-          0%   { transform: translateY(100vh) scale(0); opacity: 0; }
-          10%  { opacity: 1; }
-          90%  { opacity: 1; }
-          100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        /* Aurora color shift — hue-rotate on a gradient is basically FREE */
+        @keyframes aurora-shift {
+          0%   { filter: hue-rotate(0deg); opacity: 0.6; }
+          33%  { filter: hue-rotate(15deg); opacity: 0.8; }
+          66%  { filter: hue-rotate(-10deg); opacity: 0.7; }
+          100% { filter: hue-rotate(0deg); opacity: 0.6; }
         }
-        @keyframes twinkle {
-          0%, 100% { opacity: 0.15; transform: scale(0.8); }
-          50%      { opacity: 1; transform: scale(1.2); }
+
+        /* Shooting star — translate across screen */
+        @keyframes shoot {
+          0%   { transform: translateX(0) translateY(0) scaleX(0); opacity: 0; }
+          5%   { opacity: 1; scaleX(1); }
+          70%  { opacity: 1; }
+          100% { transform: translateX(100vw) translateY(60vh) scaleX(1); opacity: 0; }
         }
-        @keyframes pulse-ring {
-          0%   { transform: scale(0.8); opacity: 0.5; }
-          100% { transform: scale(2.2); opacity: 0; }
+
+        /* Firefly — organic float path */
+        @keyframes firefly {
+          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+          25%      { transform: translate(30px, -20px) scale(1.3); opacity: 0.9; }
+          50%      { transform: translate(-15px, -40px) scale(0.8); opacity: 0.4; }
+          75%      { transform: translate(20px, 10px) scale(1.1); opacity: 1; }
         }
+
+        /* Rising orbs — float up and fade */
+        @keyframes rise {
+          0%   { transform: translateY(100vh) scale(0.3); opacity: 0; }
+          15%  { opacity: 0.8; transform: translateY(80vh) scale(1); }
+          85%  { opacity: 0.6; }
+          100% { transform: translateY(-10vh) scale(0.5); opacity: 0; }
+        }
+
+        /* Concentric pulse rings */
+        @keyframes ring-expand {
+          0%   { transform: scale(0.5); opacity: 0.6; }
+          100% { transform: scale(3); opacity: 0; }
+        }
+
+        /* Gentle float for text */
         @keyframes gentle-float {
           0%, 100% { transform: translateY(0); }
-          50%      { transform: translateY(-8px); }
+          50%      { transform: translateY(-10px); }
+        }
+
+        /* Slow spin for decorative elements */
+        @keyframes slow-spin {
+          0%   { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        /* Heartbeat like a real heart — double pulse */
+        @keyframes real-heartbeat {
+          0%, 100% { transform: scale(1); }
+          15%      { transform: scale(1.25); }
+          30%      { transform: scale(1); }
+          45%      { transform: scale(1.18); }
+          60%      { transform: scale(1); }
+        }
+
+        /* Letter pop for "Te amo" — each letter appears dramatically */
+        @keyframes text-glow-pulse {
+          0%, 100% { text-shadow: 0 0 20px rgba(250,204,21,0.3), 0 0 60px rgba(250,204,21,0.1); }
+          50%      { text-shadow: 0 0 40px rgba(250,204,21,0.6), 0 0 100px rgba(250,204,21,0.2), 0 0 150px rgba(250,204,21,0.1); }
         }
       `}</style>
 
-      {/* ── Fondo con gradientes estáticos (sin blur) ── */}
-      <div className="fixed inset-0 bg-gradient-to-br from-black via-neutral-950 to-black -z-10">
-        <div className="absolute inset-0 bg-gradient-to-tr from-yellow-900/15 via-transparent to-amber-900/15" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(250,204,21,0.1)_0%,transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(245,158,11,0.1)_0%,transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(250,204,21,0.05)_0%,transparent_40%)]" />
+      {/* ═══ BACKGROUND — Aurora / Northern lights effect ═══ */}
+      <div className="fixed inset-0 -z-10 bg-black">
+        {/* Base dark gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-neutral-950 via-black to-neutral-950" />
+
+        {/* Aurora band 1 — warm gold/amber */}
+        <div
+          className="absolute top-0 left-0 w-full h-[60%]"
+          style={{
+            background: 'linear-gradient(135deg, transparent 20%, rgba(250,204,21,0.07) 40%, rgba(245,158,11,0.1) 50%, rgba(250,204,21,0.05) 65%, transparent 80%)',
+            animation: 'aurora-shift 12s infinite ease-in-out',
+            willChange: 'filter, opacity',
+          }}
+        />
+
+        {/* Aurora band 2 — offset, different timing */}
+        <div
+          className="absolute bottom-0 right-0 w-full h-[50%]"
+          style={{
+            background: 'linear-gradient(225deg, transparent 25%, rgba(251,191,36,0.06) 45%, rgba(217,119,6,0.08) 55%, transparent 75%)',
+            animation: 'aurora-shift 16s 3s infinite ease-in-out',
+            willChange: 'filter, opacity',
+          }}
+        />
+
+        {/* Center glow — radial gradient, no blur filter */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,rgba(250,204,21,0.06)_0%,transparent_100%)]" />
       </div>
 
-      {/* ── Partículas doradas flotando hacia arriba (CSS puro) ── */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        {PARTICLES.map((p, i) => (
+      {/* ═══ SHOOTING STARS — CSS only, stunning trail effect ═══ */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-[1]">
+        {STARS.map((s, i) => (
           <div
-            key={i}
-            className="absolute bottom-0 rounded-full bg-yellow-400/80"
+            key={`star-${i}`}
+            className="absolute"
             style={{
-              left: p.left,
-              width: p.size,
-              height: p.size,
-              animation: `float-up ${p.dur} ${p.delay} infinite ease-in-out`,
+              top: s.top,
+              left: s.left,
+              width: s.len,
+              height: 2,
+              background: `linear-gradient(90deg, transparent, rgba(250,204,21,0.8) 40%, #fff 90%, transparent)`,
+              borderRadius: 999,
+              transform: `rotate(${s.angle}deg)`,
+              animation: `shoot ${s.dur} ${s.delay} infinite ease-in`,
               willChange: 'transform, opacity',
             }}
           />
         ))}
       </div>
 
-      {/* ── Estrellas parpadeantes en las esquinas (CSS puro) ── */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        {TWINKLES.map((t, i) => (
-          <span
-            key={i}
-            className="absolute"
+      {/* ═══ FIREFLIES — organic floating points of light ═══ */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-[1]">
+        {FIREFLIES.map((f, i) => (
+          <div
+            key={`fly-${i}`}
+            className="absolute rounded-full"
             style={{
-              top: t.top,
-              left: t.left,
-              right: t.right,
-              bottom: t.bottom,
-              fontSize: t.size,
-              animation: `twinkle 3s ${t.delay} infinite ease-in-out`,
+              left: f.x,
+              top: f.y,
+              width: f.size,
+              height: f.size,
+              background: 'radial-gradient(circle, rgba(250,204,21,0.9) 0%, rgba(250,204,21,0) 70%)',
+              animation: `firefly ${f.dur} ${f.delay} infinite ease-in-out`,
               willChange: 'transform, opacity',
             }}
-          >
-            ✦
-          </span>
+          />
         ))}
       </div>
 
-      {/* ── Main content ── */}
+      {/* ═══ RISING GOLDEN ORBS — magical floating lights ═══ */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-[1]">
+        {ORBS.map((o, i) => (
+          <div
+            key={`orb-${i}`}
+            className="absolute bottom-0 rounded-full"
+            style={{
+              left: o.left,
+              width: o.size,
+              height: o.size,
+              background: 'radial-gradient(circle, rgba(251,191,36,0.8) 0%, rgba(250,204,21,0) 70%)',
+              animation: `rise ${o.dur} ${o.delay} infinite ease-in-out`,
+              willChange: 'transform, opacity',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* ═══ DECORATIVE SPINNING RING — behind content ═══ */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-[2]">
+        <div
+          className="w-[280px] h-[280px] sm:w-[360px] sm:h-[360px] md:w-[440px] md:h-[440px] rounded-full border border-yellow-400/10"
+          style={{
+            animation: 'slow-spin 30s linear infinite',
+            background: 'conic-gradient(from 0deg, transparent, rgba(250,204,21,0.08) 25%, transparent 50%, rgba(245,158,11,0.06) 75%, transparent)',
+            willChange: 'transform',
+          }}
+        />
+      </div>
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-[2]">
+        <div
+          className="w-[340px] h-[340px] sm:w-[440px] sm:h-[440px] md:w-[540px] md:h-[540px] rounded-full border border-yellow-400/5"
+          style={{
+            animation: 'slow-spin 45s linear infinite reverse',
+            background: 'conic-gradient(from 180deg, transparent, rgba(251,191,36,0.05) 25%, transparent 50%, rgba(250,204,21,0.04) 75%, transparent)',
+            willChange: 'transform',
+          }}
+        />
+      </div>
+
+      {/* ═══ MAIN CONTENT ═══ */}
       <motion.div
         variants={containerVariants}
         initial="initial"
         animate="animate"
-        className="relative z-10 w-full h-full flex flex-col items-center justify-center px-6 gap-5"
+        className="relative z-10 w-full h-full flex flex-col items-center justify-center px-6 gap-4"
       >
-        {/* Top decorative line con sparkles */}
-        <motion.div variants={itemVariants} className="flex items-center gap-3">
-          <div className="h-px w-20 bg-gradient-to-r from-transparent via-yellow-400/60 to-yellow-400/80 rounded-full" />
+        {/* Top decorative line */}
+        <motion.div variants={itemVariants} className="flex items-center gap-4">
+          <div className="h-px w-24 bg-gradient-to-r from-transparent via-yellow-400/40 to-yellow-400/70 rounded-full" />
           <motion.span
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            className="text-2xl"
+            animate={{ opacity: [0.4, 1, 0.4], rotate: [0, 180, 360] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            className="text-xl"
           >
-            ✨
+            ✦
           </motion.span>
-          <div className="h-px w-20 bg-gradient-to-l from-transparent via-yellow-400/60 to-yellow-400/80 rounded-full" />
+          <span className="text-xs text-yellow-400/40 tracking-[0.5em] uppercase font-light">para ti</span>
+          <motion.span
+            animate={{ opacity: [0.4, 1, 0.4], rotate: [360, 180, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            className="text-xl"
+          >
+            ✦
+          </motion.span>
+          <div className="h-px w-24 bg-gradient-to-l from-transparent via-yellow-400/40 to-yellow-400/70 rounded-full" />
         </motion.div>
 
-        {/* "Te amo" — entrada épica + gradient shimmer */}
-        <motion.div
-          variants={itemVariants}
-          className="text-center"
-        >
+        {/* "Te amo" — EPIC entrance + glow pulse */}
+        <motion.div variants={itemVariants} className="text-center relative">
           <motion.h1
-            initial={{ opacity: 0, scale: 0.8, y: 30 }}
+            initial={{ opacity: 0, scale: 0.5, y: 50 }}
             animate={{
               opacity: 1,
               scale: 1,
@@ -164,92 +293,97 @@ export default function ScreenFour({ audioUrl }: ScreenFourProps) {
               backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
             }}
             transition={{
-              opacity: { duration: 0.8, ease: 'easeOut' },
-              scale: { duration: 1, ease: [0.16, 1, 0.3, 1] },
-              y: { duration: 1, ease: 'easeOut' },
-              backgroundPosition: { duration: 4, repeat: Infinity, ease: 'linear', delay: 1 },
+              opacity: { duration: 1, ease: 'easeOut' },
+              scale: { duration: 1.4, ease: [0.16, 1, 0.3, 1] },
+              y: { duration: 1.2, ease: [0.16, 1, 0.3, 1] },
+              backgroundPosition: { duration: 4, repeat: Infinity, ease: 'linear', delay: 1.5 },
             }}
-            className="text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] font-black leading-none tracking-tight"
+            className="text-7xl sm:text-8xl md:text-9xl lg:text-[11rem] font-black leading-none tracking-tight"
             style={{
               backgroundImage:
-                'linear-gradient(90deg, #facc15, #fde68a, #ffffff, #fde68a, #facc15, #fde68a)',
+                'linear-gradient(90deg, #f59e0b, #facc15, #fef3c7, #ffffff, #fef3c7, #facc15, #f59e0b)',
               backgroundSize: '200% 100%',
               WebkitBackgroundClip: 'text',
               backgroundClip: 'text',
               color: 'transparent',
+              animation: 'text-glow-pulse 3s 2s infinite ease-in-out',
             }}
           >
             Te amo
           </motion.h1>
         </motion.div>
 
-        {/* "mucho" — letter spacing reveal + gradient */}
+        {/* "mucho" — dramatic letter spacing reveal */}
         <motion.div variants={itemVariants} className="text-center">
           <motion.h2
-            initial={{ opacity: 0, letterSpacing: '0.8em', scale: 0.9 }}
-            animate={{ opacity: 1, letterSpacing: '0.2em', scale: 1 }}
-            transition={{ duration: 1.8, delay: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-4xl sm:text-5xl md:text-7xl font-bold"
+            initial={{ opacity: 0, letterSpacing: '1em', y: 20 }}
+            animate={{ opacity: 1, letterSpacing: '0.25em', y: 0 }}
+            transition={{ duration: 2, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold"
             style={{
-              backgroundImage: 'linear-gradient(90deg, #fbbf24, #f59e0b, #fde68a, #fbbf24)',
+              backgroundImage: 'linear-gradient(90deg, #d97706, #f59e0b, #fbbf24, #fde68a, #fbbf24, #f59e0b, #d97706)',
+              backgroundSize: '200% 100%',
               WebkitBackgroundClip: 'text',
               backgroundClip: 'text',
               color: 'transparent',
+              animation: 'text-glow-pulse 4s 3s infinite ease-in-out',
             }}
           >
             mucho
           </motion.h2>
         </motion.div>
 
-        {/* Heart — heartbeat + pulse ring (CSS animation, no JS) */}
-        <motion.div variants={itemVariants} className="my-4 relative flex items-center justify-center">
-          {/* Pulse ring - CSS only */}
-          <div
-            className="absolute w-24 h-24 rounded-full border-2 border-yellow-400/30"
-            style={{ animation: 'pulse-ring 2.5s infinite ease-out' }}
-          />
-          <div
-            className="absolute w-24 h-24 rounded-full border border-yellow-400/20"
-            style={{ animation: 'pulse-ring 2.5s 1.2s infinite ease-out' }}
-          />
+        {/* Heart — real heartbeat + expanding rings */}
+        <motion.div variants={itemVariants} className="my-3 relative flex items-center justify-center">
+          {/* Concentric pulse rings — CSS only */}
+          <div className="absolute w-20 h-20 rounded-full border-2 border-yellow-400/25"
+            style={{ animation: 'ring-expand 3s 0s infinite ease-out', willChange: 'transform, opacity' }} />
+          <div className="absolute w-20 h-20 rounded-full border border-amber-400/20"
+            style={{ animation: 'ring-expand 3s 1s infinite ease-out', willChange: 'transform, opacity' }} />
+          <div className="absolute w-20 h-20 rounded-full border border-yellow-300/15"
+            style={{ animation: 'ring-expand 3s 2s infinite ease-out', willChange: 'transform, opacity' }} />
 
-          <motion.span
-            animate={{ scale: [1, 1.2, 1, 1.2, 1] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+          <span
             className="text-6xl sm:text-7xl md:text-8xl inline-block relative z-10"
-            style={{ textShadow: '0 0 40px rgba(250, 204, 21, 0.5)' }}
+            style={{
+              animation: 'real-heartbeat 1.8s infinite ease-in-out',
+              textShadow: '0 0 30px rgba(250,204,21,0.5), 0 0 60px rgba(250,204,21,0.2)',
+              willChange: 'transform',
+            }}
           >
             💛
-          </motion.span>
+          </span>
         </motion.div>
 
-        {/* Subtitle — fade in con float */}
+        {/* Subtitle — elegant fade + float */}
         <motion.div
           variants={itemVariants}
           className="text-center max-w-xl"
-          style={{ animation: 'gentle-float 4s infinite ease-in-out' }}
+          style={{ animation: 'gentle-float 5s infinite ease-in-out' }}
         >
           <motion.p
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 2.2, duration: 1 }}
-            className="text-lg sm:text-xl md:text-2xl font-medium text-yellow-100/80"
+            transition={{ delay: 2.5, duration: 1.2, ease: 'easeOut' }}
+            className="text-lg sm:text-xl md:text-2xl font-light text-yellow-100/70 tracking-wide"
           >
             Eres lo mejor que me ha pasado 💫
           </motion.p>
         </motion.div>
 
-        {/* Bottom emojis — stagger con gentle bounce */}
-        <motion.div variants={itemVariants} className="flex gap-5 justify-center text-3xl mt-2">
-          {['⭐', '💛', '✨', '🌟', '💫'].map((emoji, i) => (
+        {/* Bottom emojis — stagger explosion + gentle float */}
+        <motion.div variants={itemVariants} className="flex gap-6 justify-center text-2xl sm:text-3xl mt-1">
+          {['⭐', '💛', '✨', '🌟', '💫', '🌙'].map((emoji, i) => (
             <motion.span
               key={i}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 2.5 + i * 0.12, duration: 0.5, ease: 'easeOut' }}
-              style={{
-                animation: `gentle-float ${3 + i * 0.4}s ${i * 0.3}s infinite ease-in-out`,
+              initial={{ opacity: 0, scale: 0, rotate: -180 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{
+                delay: 3 + i * 0.1,
+                duration: 0.6,
+                ease: [0.16, 1, 0.3, 1],
               }}
+              style={{ animation: `gentle-float ${3.5 + i * 0.5}s ${i * 0.4}s infinite ease-in-out` }}
             >
               {emoji}
             </motion.span>
@@ -257,27 +391,27 @@ export default function ScreenFour({ audioUrl }: ScreenFourProps) {
         </motion.div>
 
         {/* Bottom decorative line */}
-        <motion.div variants={itemVariants} className="flex items-center gap-3">
-          <div className="h-px w-20 bg-gradient-to-r from-transparent via-yellow-400/60 to-yellow-400/80 rounded-full" />
+        <motion.div variants={itemVariants} className="flex items-center gap-4 mt-1">
+          <div className="h-px w-24 bg-gradient-to-r from-transparent via-yellow-400/40 to-yellow-400/70 rounded-full" />
           <motion.span
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-            className="text-2xl"
+            animate={{ opacity: [0.4, 1, 0.4], rotate: [360, 180, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+            className="text-xl"
           >
-            ✨
+            ✦
           </motion.span>
-          <div className="h-px w-20 bg-gradient-to-l from-transparent via-yellow-400/60 to-yellow-400/80 rounded-full" />
+          <div className="h-px w-24 bg-gradient-to-l from-transparent via-yellow-400/40 to-yellow-400/70 rounded-full" />
         </motion.div>
 
         {/* Tap to play hint */}
         {!audioStarted && audioUrl && (
           <motion.p
             initial={{ opacity: 0 }}
-            animate={{ opacity: [0.4, 0.8, 0.4] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="text-yellow-300/60 text-sm mt-4"
+            animate={{ opacity: [0.3, 0.7, 0.3] }}
+            transition={{ duration: 2.5, repeat: Infinity }}
+            className="text-yellow-300/50 text-sm mt-3 tracking-widest uppercase font-light"
           >
-            Toca la pantalla para escuchar la música 🎵
+            Toca para escuchar la música 🎵
           </motion.p>
         )}
       </motion.div>
