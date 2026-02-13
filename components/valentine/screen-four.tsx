@@ -42,6 +42,25 @@ const ORBS = [
   { left: '95%', dur: '14s', delay: '3.5s', size: 2 },
 ];
 
+/* ═══ Starfield — tiny background stars ═══ */
+const STAR_FIELD = Array.from({ length: 30 }, (_, i) => ({
+  x: `${Math.round((i * 37 + 13) % 100)}%`,
+  y: `${Math.round((i * 53 + 7) % 100)}%`,
+  size: (i % 3) + 1,
+  delay: `${(i * 0.7) % 5}s`,
+  dur: `${3 + (i % 4)}s`,
+}));
+
+/* ═══ Musical notes that float when audio plays ═══ */
+const NOTES = [
+  { emoji: '♪', left: '5%',  dur: '8s',  delay: '0s' },
+  { emoji: '♫', left: '20%', dur: '10s', delay: '2s' },
+  { emoji: '♪', left: '35%', dur: '9s',  delay: '4s' },
+  { emoji: '♫', left: '60%', dur: '11s', delay: '1s' },
+  { emoji: '♪', left: '78%', dur: '8.5s',delay: '3s' },
+  { emoji: '♫', left: '92%', dur: '10s', delay: '5s' },
+];
+
 export default function ScreenFour({ audioUrl }: ScreenFourProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioStarted, setAudioStarted] = useState(false);
@@ -79,7 +98,7 @@ export default function ScreenFour({ audioUrl }: ScreenFourProps) {
 
       {/* ═══════════ ALL CSS KEYFRAMES — only transform + opacity = GPU composited ═══════════ */}
       <style jsx>{`
-        /* Aurora color shift — hue-rotate on a gradient is basically FREE */
+        /* Aurora color shift */
         @keyframes aurora-shift {
           0%   { filter: hue-rotate(0deg); opacity: 0.6; }
           33%  { filter: hue-rotate(15deg); opacity: 0.8; }
@@ -87,7 +106,7 @@ export default function ScreenFour({ audioUrl }: ScreenFourProps) {
           100% { filter: hue-rotate(0deg); opacity: 0.6; }
         }
 
-        /* Shooting star — translate across screen */
+        /* Shooting star */
         @keyframes shoot {
           0%   { transform: translateX(0) translateY(0) scaleX(0); opacity: 0; }
           5%   { opacity: 1; scaleX(1); }
@@ -103,7 +122,7 @@ export default function ScreenFour({ audioUrl }: ScreenFourProps) {
           75%      { transform: translate(20px, 10px) scale(1.1); opacity: 1; }
         }
 
-        /* Rising orbs — float up and fade */
+        /* Rising orbs */
         @keyframes rise {
           0%   { transform: translateY(100vh) scale(0.3); opacity: 0; }
           15%  { opacity: 0.8; transform: translateY(80vh) scale(1); }
@@ -123,13 +142,13 @@ export default function ScreenFour({ audioUrl }: ScreenFourProps) {
           50%      { transform: translateY(-10px); }
         }
 
-        /* Slow spin for decorative elements */
+        /* Slow spin */
         @keyframes slow-spin {
           0%   { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
 
-        /* Heartbeat like a real heart — double pulse */
+        /* Real heartbeat — double pulse */
         @keyframes real-heartbeat {
           0%, 100% { transform: scale(1); }
           15%      { transform: scale(1.25); }
@@ -138,10 +157,54 @@ export default function ScreenFour({ audioUrl }: ScreenFourProps) {
           60%      { transform: scale(1); }
         }
 
-        /* Letter pop for "Te amo" — each letter appears dramatically */
+        /* Text glow pulse */
         @keyframes text-glow-pulse {
           0%, 100% { text-shadow: 0 0 20px rgba(250,204,21,0.3), 0 0 60px rgba(250,204,21,0.1); }
           50%      { text-shadow: 0 0 40px rgba(250,204,21,0.6), 0 0 100px rgba(250,204,21,0.2), 0 0 150px rgba(250,204,21,0.1); }
+        }
+
+        /* ✨ NEW: Starfield twinkle */
+        @keyframes star-twinkle {
+          0%, 100% { opacity: 0.1; transform: scale(0.5); }
+          50%      { opacity: 0.8; transform: scale(1); }
+        }
+
+        /* ✨ NEW: SVG heart draw — stroke-dashoffset is GPU composited */
+        @keyframes draw-heart {
+          0%   { stroke-dashoffset: 800; opacity: 0; }
+          10%  { opacity: 1; }
+          70%  { stroke-dashoffset: 0; opacity: 1; }
+          85%  { stroke-dashoffset: 0; opacity: 0.6; }
+          100% { stroke-dashoffset: 0; opacity: 0.3; }
+        }
+
+        @keyframes heart-glow-breathe {
+          0%, 100% { opacity: 0.2; }
+          50%      { opacity: 0.5; }
+        }
+
+        /* ✨ NEW: Musical notes floating */
+        @keyframes note-float {
+          0%   { transform: translateY(100vh) rotate(0deg) scale(0.5); opacity: 0; }
+          10%  { opacity: 0.6; transform: translateY(80vh) rotate(15deg) scale(0.8); }
+          50%  { opacity: 0.4; transform: translateY(40vh) rotate(-10deg) scale(1); }
+          90%  { opacity: 0.3; }
+          100% { transform: translateY(-10vh) rotate(20deg) scale(0.6); opacity: 0; }
+        }
+
+        /* ✨ NEW: Infinity draw */
+        @keyframes draw-infinity {
+          0%   { stroke-dashoffset: 500; opacity: 0; }
+          15%  { opacity: 0.8; }
+          60%  { stroke-dashoffset: 0; }
+          100% { stroke-dashoffset: 0; opacity: 0.6; }
+        }
+
+        /* ✨ NEW: Diamond sparkle burst */
+        @keyframes diamond-burst {
+          0%   { transform: scale(0) rotate(0deg); opacity: 0; }
+          50%  { transform: scale(1.2) rotate(180deg); opacity: 1; }
+          100% { transform: scale(0) rotate(360deg); opacity: 0; }
         }
       `}</style>
 
@@ -254,6 +317,88 @@ export default function ScreenFour({ audioUrl }: ScreenFourProps) {
         />
       </div>
 
+      {/* ═══ ✨ NEW: STARFIELD — tiny distant stars ═══ */}
+      <div className="fixed inset-0 pointer-events-none z-[1]">
+        {STAR_FIELD.map((s, i) => (
+          <div
+            key={`sf-${i}`}
+            className="absolute rounded-full bg-white"
+            style={{
+              left: s.x,
+              top: s.y,
+              width: s.size,
+              height: s.size,
+              animation: `star-twinkle ${s.dur} ${s.delay} infinite ease-in-out`,
+              willChange: 'transform, opacity',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* ═══ ✨ NEW: SVG SELF-DRAWING HEART — behind the emoji heart ═══ */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-[3]">
+        <svg
+          viewBox="0 0 200 200"
+          className="w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] md:w-[340px] md:h-[340px]"
+          fill="none"
+          style={{ marginTop: '20px' }}
+        >
+          <path
+            d="M100 180 C60 140, 10 120, 10 80 C10 40, 50 20, 100 60 C150 20, 190 40, 190 80 C190 120, 140 140, 100 180Z"
+            stroke="url(#heartGrad)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeDasharray="800"
+            style={{
+              animation: 'draw-heart 4s 1.5s ease-out forwards',
+              willChange: 'stroke-dashoffset, opacity',
+            }}
+          />
+          {/* Second heart — delayed, breathes */}
+          <path
+            d="M100 170 C65 135, 25 118, 25 82 C25 48, 58 30, 100 65 C142 30, 175 48, 175 82 C175 118, 135 135, 100 170Z"
+            stroke="url(#heartGrad2)"
+            strokeWidth="0.8"
+            strokeLinecap="round"
+            strokeDasharray="700"
+            style={{
+              animation: 'draw-heart 5s 2.5s ease-out forwards',
+              willChange: 'stroke-dashoffset, opacity',
+            }}
+          />
+          <defs>
+            <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#facc15" />
+              <stop offset="50%" stopColor="#fef3c7" />
+              <stop offset="100%" stopColor="#f59e0b" />
+            </linearGradient>
+            <linearGradient id="heartGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#facc15" stopOpacity="0.3" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      {/* ═══ ✨ NEW: MUSICAL NOTES floating when audio plays ═══ */}
+      {audioStarted && (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-[1]">
+          {NOTES.map((n, i) => (
+            <span
+              key={`note-${i}`}
+              className="absolute bottom-0 text-yellow-400/40 text-2xl"
+              style={{
+                left: n.left,
+                animation: `note-float ${n.dur} ${n.delay} infinite ease-in-out`,
+                willChange: 'transform, opacity',
+              }}
+            >
+              {n.emoji}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* ═══ MAIN CONTENT ═══ */}
       <motion.div
         variants={containerVariants}
@@ -333,6 +478,33 @@ export default function ScreenFour({ audioUrl }: ScreenFourProps) {
           </motion.h2>
         </motion.div>
 
+        {/* ✨ NEW: SVG Infinity symbol — draws itself between text and heart */}
+        <motion.div
+          variants={itemVariants}
+          className="flex items-center justify-center gap-3"
+        >
+          <svg viewBox="0 0 120 40" className="w-20 h-7 sm:w-24 sm:h-8" fill="none">
+            <path
+              d="M30 20 C30 10, 10 10, 10 20 C10 30, 30 30, 30 20 C30 10, 50 10, 50 20 L70 20 C70 10, 90 10, 90 20 C90 30, 110 30, 110 20 C110 10, 90 10, 90 20 C90 30, 70 30, 70 20 L50 20"
+              stroke="url(#infGrad)"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeDasharray="500"
+              style={{
+                animation: 'draw-infinity 4s 2s ease-out forwards',
+                willChange: 'stroke-dashoffset, opacity',
+              }}
+            />
+            <defs>
+              <linearGradient id="infGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#facc15" stopOpacity="0.7" />
+                <stop offset="50%" stopColor="#fef3c7" stopOpacity="0.9" />
+                <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.7" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </motion.div>
+
         {/* Heart — real heartbeat + expanding rings */}
         <motion.div variants={itemVariants} className="my-3 relative flex items-center justify-center">
           {/* Concentric pulse rings — CSS only */}
@@ -369,6 +541,42 @@ export default function ScreenFour({ audioUrl }: ScreenFourProps) {
           >
             Eres lo mejor que me ha pasado 💫
           </motion.p>
+        </motion.div>
+
+        {/* ✨ NEW: Second message — delayed dramatic reveal */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 4, duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center"
+          style={{ animation: 'gentle-float 6s 1s infinite ease-in-out' }}
+        >
+          <p className="text-sm sm:text-base md:text-lg tracking-[0.4em] uppercase font-light"
+            style={{
+              backgroundImage: 'linear-gradient(90deg, rgba(250,204,21,0.4), rgba(254,243,199,0.7), rgba(250,204,21,0.4))',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+            }}
+          >
+            hoy, mañana y siempre
+          </p>
+        </motion.div>
+
+        {/* ✨ NEW: Diamond sparkle decorations */}
+        <motion.div variants={itemVariants} className="flex gap-8 justify-center items-center">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={`d-${i}`}
+              className="text-yellow-400/60 text-xs"
+              style={{
+                animation: `diamond-burst 3s ${i * 1}s infinite ease-in-out`,
+                willChange: 'transform, opacity',
+              }}
+            >
+              ◆
+            </span>
+          ))}
         </motion.div>
 
         {/* Bottom emojis — stagger explosion + gentle float */}
